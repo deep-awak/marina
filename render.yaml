@@ -11,4 +11,3 @@ services:
     envVars:
       - key: PROP
         value: "(a&b | c)->d <-> ~e"
-        sync: false

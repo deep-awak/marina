@@ -1,0 +1,14 @@
+services:
+  - type: cron
+    name: marina-solver
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    # Render cron jobs require a schedule expression, but you can trigger
+    # a run manually at any time from the Render dashboard ("Trigger Run").
+    # This schedule (once a year, Jan 1st) effectively means "on demand only".
+    schedule: "0 0 1 1 *"
+    envVars:
+      - key: PROP
+        value: "(a&b | c)->d <-> ~e"
+        sync: false

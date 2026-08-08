@@ -1,0 +1,38 @@
+name: Solve
+
+on:
+  workflow_dispatch:
+    inputs:
+      formula:
+        description: "Formule logique a resoudre (ex: (a&b | c)->d <-> ~e)"
+        required: true
+        default: "(a&b | c)->d <-> ~e"
+
+jobs:
+  solve:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - uses: ocaml/setup-ocaml@v3.4.0
+        with:
+          ocaml-compiler: 4.13.x
+
+      - name: Build marina
+        run: |
+          opam install -y ocamlfind ounit2
+          eval $(opam env)
+          make
+
+      - name: Run marina
+        run: |
+          eval $(opam env)
+          echo "### Formule" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ github.event.inputs.formula }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "### Resultat" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./marina "${{ github.event.inputs.formula }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

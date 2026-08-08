@@ -13,16 +13,18 @@ RUN opam install -y ocamlfind ounit2 \
     && make
 
 # ---------- Runtime stage ----------
-FROM debian:bookworm-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
 # The Makefile builds with `-custom`, producing a self-contained
 # executable (bytecode + embedded runtime), so no OCaml install is
-# needed at runtime — only glibc, already present in this base image.
+# needed at runtime -- only glibc, already present in this base image.
 COPY --from=builder /home/opam/marina/marina /app/marina
+COPY server.py /app/server.py
 
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh /app/marina
+RUN chmod +x /app/marina
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# Render sets $PORT at runtime; server.py reads it.
+EXPOSE 8000
+CMD ["python3", "/app/server.py"]

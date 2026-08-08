@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: marina-solver
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /healthz
